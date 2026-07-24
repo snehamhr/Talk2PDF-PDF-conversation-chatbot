@@ -1,78 +1,167 @@
-Talk2PDF AI
+# Talk2PDF
 
-Talk2PDF AI is a multi-document PDF assistant that turns uploaded PDFs into an interactive learning workspace.
+Talk2PDF is a multi-document PDF assistant built with FastAPI, Groq, Hugging Face Inference API, semantic retrieval, and a responsive web interface.
 
-Users can upload one or more PDF files, ask questions, generate summaries, create revision notes, solve document-related problems, compare concepts, and generate quizzes or flashcards. Answers are supported with page-aware evidence from the uploaded documents.
+The application extracts text from uploaded PDFs, creates page-aware chunks, retrieves relevant document sections, and uses them as context to generate clear, document-grounded responses with page citations.
 
+## Features
 
-Key Capabilities
-Upload and process multiple PDF documents
-Extract text page by page
-Clean repeated headers, footers, page numbers, and document noise
-Divide document content into page-aware chunks
-Generate semantic embeddings for document retrieval
-Ask factual questions about uploaded PDFs
-Generate full-document summaries
-Explain complex content in simple language
-Create exam-ready revision notes
-Generate practice questions and quizzes
-Create flashcards
-Compare concepts across multiple documents
-Solve calculations and document-related problems
-Maintain short-term conversational context
-Show supporting document citations
-Display source document names and page numbers
-Inspect randomly selected extracted chunks
-Export cleaned pages and document chunks
-Support light and dark interface themes
-Technology Stack
-Backend
-Python
-FastAPI
-PyMuPDF
-NumPy
-Groq API
-Hugging Face Inference API
-Pydantic
-Frontend
-HTML
-CSS
-Vanilla JavaScript
-Models
-LLM: openai/gpt-oss-20b through Groq
-Embeddings: sentence-transformers/all-MiniLM-L6-v2
-Basic Application Flow
-PDF Upload
-    ↓
-Page-wise Text Extraction
-    ↓
-Text Cleaning
-    ↓
-Page-aware Chunking
-    ↓
-Embedding Generation
-    ↓
-Semantic Retrieval
-    ↓
-Relevant Document Context
-    ↓
-LLM Response
-    ↓
-Answer with Page Citations
-How It Works
-The user uploads one or more PDF files.
-Talk2PDF extracts text separately from every page.
-Repeated document noise such as page numbers, headers, and footers is removed.
-Cleaned text is divided into overlapping chunks.
-Each chunk is converted into a semantic embedding.
-When the user asks a question, Talk2PDF retrieves the most relevant chunks.
-The selected document evidence is sent to the language model.
-The generated response is displayed with supporting document and page references.
+- Upload and process multiple PDF documents
+- Ask questions about uploaded PDFs
+- Generate summaries in simple language
+- Create revision notes and study guides
+- Generate practice questions, quizzes, and flashcards
+- Compare concepts across multiple documents
+- Solve document-related calculations and problems
+- Page-wise PDF text extraction
+- Repeated header, footer, and page-number cleanup
+- Page-aware overlapping text chunks
+- Semantic retrieval using Hugging Face embeddings
+- Groq-powered language-model responses
+- Short-term conversation memory
+- Source citations with document names and page numbers
+- Random chunk inspection
+- Cleaned-page and chunk export
+- Responsive light and dark user interface
+- No permanent backend conversation storage
 
-For broad requests such as summaries, study notes, quizzes, or document comparisons, Talk2PDF samples context from different portions of the uploaded documents instead of relying only on a single retrieved section.
+## Technology Stack
 
-Project Structure
-Talk2PDF/
+### Backend
+
+- Python
+- FastAPI
+- Uvicorn
+- PyMuPDF
+- NumPy
+- Groq API
+- Hugging Face Inference API
+- Pydantic
+- Pydantic Settings
+
+### Retrieval
+
+- Hugging Face Inference API
+- `sentence-transformers/all-MiniLM-L6-v2`
+- Normalized embedding vectors
+- Cosine-similarity retrieval
+- Page-aware document chunks
+
+### Frontend
+
+- HTML
+- CSS
+- JavaScript
+
+## How Talk2PDF Works
+
+```text
+PDF upload
+    ↓
+Page-wise text extraction
+    ↓
+Text cleaning
+    ↓
+Page-aware chunking
+    ↓
+Hugging Face embedding generation
+    ↓
+Semantic retrieval
+    ↓
+Relevant document context
+    ↓
+Groq language model
+    ↓
+Answer with page citations
+```
+
+For direct questions, Talk2PDF converts the user query into an embedding and compares it with the stored document-chunk embeddings.
+
+For broad tasks such as summaries, revision notes, quizzes, flashcards, or comparisons, the application selects context from different parts of the uploaded documents before generating the response.
+
+## Document Processing
+
+The PDF-processing pipeline:
+
+1. Validates each uploaded file
+2. Opens the PDF with PyMuPDF
+3. Extracts text page by page
+4. Identifies blank or image-only pages
+5. Removes repeated headers and footers
+6. Removes isolated page numbers and unnecessary document noise
+7. Divides the cleaned text into overlapping chunks
+8. Preserves the page numbers connected to each chunk
+9. Generates normalized semantic embeddings
+10. Stores the documents, pages, chunks, embeddings, and messages in the active server session
+
+Current configuration:
+
+```text
+Maximum PDF size: 20 MB
+Maximum uploaded files: 5
+Maximum pages per PDF: 250
+Maximum chunks per session: 1200
+Chunk size: approximately 900 characters
+Chunk overlap: approximately 150 characters
+Minimum chunk size: 80 characters
+```
+
+## Supported Tasks
+
+Talk2PDF can handle requests such as:
+
+### Ask
+
+```text
+What is the main conclusion of this paper?
+```
+
+### Summarize
+
+```text
+Summarize this PDF in simple language.
+```
+
+### Study
+
+```text
+Create exam-ready revision notes from this chapter.
+```
+
+### Generate Questions
+
+```text
+Generate ten practice questions from the uploaded documents.
+```
+
+### Create a Quiz
+
+```text
+Create a multiple-choice quiz with answers.
+```
+
+### Create Flashcards
+
+```text
+Make flashcards from the most important concepts.
+```
+
+### Compare Documents
+
+```text
+Compare the main arguments in these two PDFs.
+```
+
+### Solve Problems
+
+```text
+Explain this formula step by step.
+```
+
+## Project Structure
+
+```text
+talk2pdf/
 │
 ├── app/
 │   ├── main.py
@@ -80,39 +169,52 @@ Talk2PDF/
 │   │
 │   └── static/
 │       ├── index.html
-│       ├── app.js
-│       └── styles.css
+│       ├── styles.css
+│       └── app.js
 │
-├── .env
 ├── .env.example
+├── .gitignore
 ├── requirements.txt
 └── README.md
-Local Run Instructions
-1. Clone or open the project
-git clone <your-repository-url>
-cd Talk2PDF
-2. Create a virtual environment
-python -m venv venv
+```
+
+## Local Setup
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
 
 Activate it on Windows:
 
-venv\Scripts\activate
+```bash
+.venv\Scripts\activate
+```
 
 Activate it on macOS or Linux:
 
-source venv/bin/activate
-3. Install dependencies
-pip install -r requirements.txt
-4. Create the environment file
+```bash
+source .venv/bin/activate
+```
 
-Create a .env file in the project root.
+Install the required packages:
 
-APP_NAME=Talk2PDF AI
+```bash
+python -m pip install -r requirements.txt
+```
+
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+APP_NAME=Talk2PDF
 
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=openai/gpt-oss-20b
 
-HF_API_KEY=your_huggingface_api_key
+HF_API_KEY=your_huggingface_token
 HF_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 
 SIMILARITY_THRESHOLD=0.30
@@ -136,92 +238,136 @@ MAX_CHUNKS=1200
 MAX_QUESTION_LENGTH=4000
 MAX_GENERATION_TOKENS=1400
 GENERATION_TEMPERATURE=0.15
-5. Start the application
-uvicorn app.main:app --reload
-6. Open Talk2PDF
+```
+
+The actual `.env` file must not be committed to GitHub.
+
+The Groq and Hugging Face API keys must remain private and must not be exposed in frontend files.
+
+## Run the Application Locally
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+Open:
+
+```text
 http://127.0.0.1:8000
-Example Prompts
-Summarize this PDF in simple language.
-What are the most important concepts in this chapter?
-Create exam-ready revision notes.
-Generate ten practice questions from the uploaded documents.
-Create a multiple-choice quiz with answers.
-Compare the main arguments in the two PDFs.
-Explain this formula step by step.
-What does the author conclude?
-Supported Document Behavior
+```
 
-Talk2PDF currently works best with:
+## Conversation Memory
 
-Text-based PDFs
-Research papers
-Lecture notes
-Textbooks
-Reports
-Articles
-Study material
-Technical documents
-Documents with selectable text
-Current Limitations
-Scanned or image-only PDFs are not supported because OCR is not included.
-Tables, diagrams, handwritten notes, and complex visual layouts may not be fully interpreted.
-Extracted text quality depends on the internal structure of the PDF.
-Very large PDFs may take longer to process.
-Each PDF is currently limited to the configured maximum file size and page count.
-Uploaded documents and conversations are stored only in temporary server memory.
-Refreshing or restarting the application clears the current session.
-User authentication and saved chat history are not included.
-Document embeddings are not stored permanently.
-The system relies on external Groq and Hugging Face APIs.
-API availability and rate limits may affect response time.
-Generated answers may still contain mistakes or incomplete interpretations.
-Citation relevance indicates retrieval similarity, not guaranteed factual correctness.
-Broad summaries use sampled document sections when the total document context is too large.
-The application does not currently support Word files, PowerPoint files, spreadsheets, or websites.
-Conversation memory is limited to a fixed number of recent messages.
-Unrelated questions may be refused when sufficient document context is not available.
-Privacy
+Talk2PDF keeps a limited number of recent messages as short-term conversation context.
 
-Talk2PDF currently operates in temporary guest mode.
+The current implementation does not permanently store conversations in a database.
 
-Uploaded PDF text, generated embeddings, and chat messages remain in the active server session only. The information is removed when the application restarts or the session is lost.
+This means:
 
-Users should avoid uploading confidential, personal, medical, financial, or otherwise sensitive documents to a public instance.
+- Conversation memory exists only in the active server session
+- Clicking **New conversation** clears the visible conversation and starts a new context
+- Refreshing the page starts a new temporary browser session
+- Restarting the backend removes uploaded documents, chunks, embeddings, and chat history
+- Conversations are not shared between users
+- Conversations are not saved permanently
 
-Project Purpose
+## Data Inspection
 
-Talk2PDF was developed as a portfolio project demonstrating practical AI engineering skills, including:
+Talk2PDF includes developer-facing inspection tools.
 
-Retrieval-Augmented Generation
-Document ingestion
-Semantic search
-Prompt design
-LLM integration
-Embedding APIs
-FastAPI development
-Multi-document question answering
-Citation-aware responses
-Frontend and backend integration
-Temporary conversational memory
-Document-processing workflows
-AI application error handling
-Future Improvements
-OCR support for scanned PDFs
-Persistent vector database
-User authentication
-Saved conversations
-Permanent document workspaces
-Streaming responses
-PDF page previews
-Improved table extraction
-Reranking retrieved chunks
-Automated retrieval evaluation
-Citation accuracy testing
-Additional file formats
-Local embedding model support
-Document-level filters
-Chat export
-Improved mobile navigation
-Disclaimer
+Users can:
 
-Talk2PDF is an educational and productivity tool. Generated answers should be reviewed against the original documents, especially when the content relates to academic assessment, medicine, law, finance, or other high-stakes topics.
+- Inspect a random extracted chunk
+- Download all document chunks as JSON
+- Download cleaned pages as JSON
+- Review document names, page numbers, word counts, and character counts
+
+These tools help verify that the PDF text was extracted and chunked correctly.
+
+## Citation Behavior
+
+Talk2PDF attaches citation IDs to document-supported responses.
+
+Each citation can include:
+
+- Citation number
+- Document name
+- Page number or page range
+- Retrieved text excerpt
+- Semantic-retrieval score
+
+The retrieval score represents similarity between the user request and the selected document chunk. It does not guarantee that every generated statement is fully accurate.
+
+## Supported Documents
+
+Talk2PDF works best with:
+
+- Text-based PDFs
+- Research papers
+- Lecture notes
+- Textbooks
+- Reports
+- Articles
+- Study guides
+- Technical documents
+- PDFs with selectable text
+
+## Limitations
+
+- Scanned or image-only PDFs are not supported because OCR is not included
+- Handwritten notes are not supported
+- Tables, figures, diagrams, and complex visual layouts may not be interpreted correctly
+- PDF extraction quality depends on the internal document structure
+- Multi-column PDFs may produce imperfect reading order
+- Large files may take longer to process
+- Uploaded documents and embeddings are stored only in temporary server memory
+- Refreshing or restarting the application clears the current session
+- User authentication is not included
+- Saved chat history is not included
+- Persistent document storage is not included
+- A vector database is not currently used
+- Groq API availability affects response generation
+- Hugging Face API availability affects embedding generation
+- API rate limits may affect response time
+- Generated answers may contain mistakes or incomplete interpretations
+- Citation relevance does not guarantee factual correctness
+- Broad summaries may use selected document sections when the complete context is too large
+- Conversation memory is limited to a fixed number of recent messages
+- Word files, PowerPoint files, spreadsheets, images, and websites are not currently supported
+- Clearly unrelated questions may receive an out-of-scope response
+
+## Privacy
+
+Talk2PDF does not intentionally store uploaded documents or conversations in a permanent backend database.
+
+PDF text, document chunks, embeddings, and chat messages remain inside the active in-memory server session.
+
+Users should avoid uploading confidential, personal, medical, financial, legal, or otherwise sensitive documents to a public instance.
+
+API keys are stored as environment variables and are not exposed in the frontend.
+
+## Project Purpose
+
+Talk2PDF was created as a portfolio project to demonstrate practical AI-engineering skills, including:
+
+- Retrieval-Augmented Generation
+- Multi-document ingestion
+- PDF text extraction
+- Semantic search
+- Embedding APIs
+- Prompt design
+- LLM integration
+- FastAPI development
+- Multi-document question answering
+- Citation-aware responses
+- Intent detection
+- Short-term conversation memory
+- Frontend and backend integration
+- Document-processing workflows
+- AI application error handling
+
+## Disclaimer
+
+Talk2PDF is an educational and productivity tool.
+
+Generated responses should be checked against the original documents, especially for academic, medical, legal, financial, or other high-stakes use cases.
