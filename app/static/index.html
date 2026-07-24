@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Talk2PDF AI</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="aurora a1"></div>
+  <div class="aurora a2"></div>
+
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="mark">D</div>
+        <div>
+          <b>Talk2PDF</b>
+          <small>DOCUMENT INTELLIGENCE</small>
+        </div>
+      </div>
+
+      <button id="newChat" class="primary" type="button">
+        ＋ New conversation
+      </button>
+
+      <div class="label">
+        DOCUMENTS
+        <span id="docCount">0</span>
+      </div>
+
+      <div id="docs" class="docs">
+        <div class="empty">Uploaded PDFs appear here.</div>
+      </div>
+
+      <div class="debugTools">
+        <div class="label debugLabel">
+          INSPECT DATA
+        </div>
+
+        <button id="inspectChunk" class="debugButton" type="button">
+          Inspect random chunk
+        </button>
+
+        <button id="downloadChunks" class="debugButton" type="button">
+          Download all chunks
+        </button>
+
+        <button id="downloadPages" class="debugButton" type="button">
+          Download cleaned pages
+        </button>
+      </div>
+
+      <div class="asideBottom">
+        <div class="privacy">
+          ◈ Session data clears on refresh
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div class="status">
+          <i></i>
+          Document-grounded AI workspace
+        </div>
+
+        <div class="actions">
+          <span id="pageMetric">0 indexed pages</span>
+
+          <button
+            id="themeBtn"
+            type="button"
+            aria-label="Toggle theme"
+          >
+            ☀
+          </button>
+        </div>
+      </header>
+
+      <section id="chat" class="chat">
+        <div id="hero" class="hero">
+          <div class="docAnimation">
+            <div class="orbit o1"></div>
+            <div class="orbit o2"></div>
+
+            <div class="core">
+              ▤
+              <div class="scan"></div>
+            </div>
+
+            <span class="sheet s1"></span>
+            <span class="sheet s2"></span>
+            <span class="sheet s3"></span>
+          </div>
+
+          <div class="eyebrow">
+            AI-POWERED DOCUMENT LEARNING
+          </div>
+
+          <h1>
+            Skip the Pages.
+            <br>
+            <span>Start the Conversation.</span>
+          </h1>
+
+          <p>
+            Ask questions, summarize documents, compare concepts, and create notes, quizzes, 
+            flashcards, and exam prep material from your PDFs.
+          </p>
+
+          <label class="drop" id="drop">
+            <input
+              id="fileInput"
+              type="file"
+              accept="application/pdf"
+              multiple
+            >
+
+            <div class="uploadIcon">⇧</div>
+
+            <div class="dropText">
+              <b id="dropTitle">
+                Drop PDFs here or browse
+              </b>
+
+              <small id="dropSub">
+                Multiple files · maximum 20 MB each
+              </small>
+            </div>
+
+            <span>›</span>
+
+            <div class="bar">
+              <i></i>
+            </div>
+          </label>
+
+          <div id="ready" class="ready"></div>
+
+          <div class="capabilityRow">
+            <span>Ask</span>
+            <span>Summarize</span>
+            <span>Study</span>
+            <span>Solve</span>
+            <span>Quiz</span>
+            <span>Compare</span>
+          </div>
+
+          <div class="prompts">
+            <button
+              type="button"
+              data-prompt="Explain this PDF in simple language and give me the most important concepts."
+            >
+              Explain this PDF in simple language and give me the most important concepts.
+            </button>
+
+            <button
+              type="button"
+              data-prompt="Create exam-ready revision notes from the uploaded documents."
+            >
+              Create exam-ready revision notes from the uploaded documents.
+            </button>
+
+            <button
+              type="button"
+              data-prompt="Generate a quiz with answers from the uploaded PDFs."
+            >
+              Generate a quiz with answers from the uploaded PDFs.
+            </button>
+          </div>
+        </div>
+
+        <div id="messages" class="messages"></div>
+      </section>
+
+      <div id="error" class="error hidden"></div>
+
+      <footer>
+        <form id="askForm" class="composer">
+          <button
+            type="button"
+            id="attach"
+            aria-label="Upload more PDFs"
+          >
+            ⌕
+          </button>
+
+          <textarea
+            id="question"
+            rows="1"
+            placeholder="Upload PDFs to begin…"
+            disabled
+          ></textarea>
+
+          <button
+            id="send"
+            type="submit"
+            aria-label="Send question"
+            disabled
+          >
+            ↑
+          </button>
+        </form>
+
+        <small>
+          Talk2PDF uses uploaded documents as its primary context and may explain,
+          reason, calculate, or generate related learning material.
+        </small>
+      </footer>
+    </main>
+  </div>
+
+  <div id="sourcePanel" class="sourcePanel hidden">
+    <button id="closeSource" type="button">
+      ×
+    </button>
+
+    <div class="eyebrow">
+      EVIDENCE SOURCE
+    </div>
+
+    <h3 id="sourceName"></h3>
+
+    <div id="sourcePage" class="pageBadge"></div>
+
+    <div class="sourceCard">
+      <div>
+        <span>Retrieved excerpt</span>
+        <span id="sourceScore"></span>
+      </div>
+
+      <p id="sourceText"></p>
+    </div>
+
+    <small>
+      Relevance is a retrieval score and does not represent guaranteed answer accuracy.
+    </small>
+  </div>
+
+  <div id="inspectModal" class="modal hidden">
+    <div class="inspectCard">
+      <button id="closeInspect" type="button">
+        ×
+      </button>
+
+      <div class="eyebrow">
+        RANDOM EXTRACTED CHUNK
+      </div>
+
+      <h2 id="inspectTitle">
+        Chunk preview
+      </h2>
+
+      <div id="inspectMeta" class="inspectMeta"></div>
+
+      <div class="inspectTextWrap">
+        <pre id="inspectText"></pre>
+      </div>
+
+      <small>
+        This is the cleaned text stored for retrieval. Embedding vectors are not shown.
+      </small>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
